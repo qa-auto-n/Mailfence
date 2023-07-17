@@ -6,25 +6,22 @@ const confirmDeletionWindow = new ConfirmDeletionWindow()
 const toolBar = new ToolBar()
 const userHomePage = new UserHomePage()
 
-class DocumentsPage
-{
+class DocumentsPage {
     elements =
-    {
-        singleDocumentblock : () => cy.get('.trow'),
-        docRenameOption: () => cy.get('#doc_rename'),
-        docRenameInput: () => cy.get('#rename_input'),
-        deleteButton: () => cy.get('#doc_delete'),
-        trashFolder: () => cy.get('div#doc_tree_trash'),
-        sortBy: () => cy.get('.sortBy')
-    }
+        {
+            singleDocumentblock: () => cy.get('.trow'),
+            docRenameOption: () => cy.get('#doc_rename'),
+            docRenameInput: () => cy.get('#rename_input'),
+            deleteButton: () => cy.get('#doc_delete'),
+            trashFolder: () => cy.get('div#doc_tree_trash'),
+            sortBy: () => cy.get('.sortBy')
+        }
 
-    getUploadedFileNameByTitle(fileName)
-    {
+    getUploadedFileNameByTitle(fileName) {
         return cy.get(`[title$="${fileName}"]`)
     }
 
-    clearUploadedDocuments()
-    {
+    clearUploadedDocuments() {
         userHomePage.navigateToDocuments()
         cy.contains('My documents').click()
         toolBar.clickRefreshButton({ timeout: 1000 })
@@ -33,8 +30,7 @@ class DocumentsPage
         this.elements.deleteButton().click()
     }
 
-    renameAndMoveLastSavedFileToTrash(newTitle)
-    {
+    renameAndMoveLastSavedFileToTrash(newTitle) {
         this.elements.sortBy().click()
         cy.contains('Date').click()
         this.elements.singleDocumentblock().eq(0).click()
@@ -44,13 +40,11 @@ class DocumentsPage
         cy.dragAndDrop(this.elements.singleDocumentblock().eq(0), this.elements.trashFolder())
     }
 
-    openTrashFolder()
-    {
+    openTrashFolder() {
         this.elements.trashFolder().click()
     }
-      
-    clearTrashFolder()
-    {
+
+    clearTrashFolder() {
         userHomePage.navigateToDocuments()
         this.openTrashFolder()
         toolBar.clickRefreshButton({ timeout: 1000 })

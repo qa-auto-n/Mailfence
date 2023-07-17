@@ -1,19 +1,16 @@
-class UserHomePage
-{
+class UserHomePage {
     elements =
-    {
-        userSection : () => cy.get('.user > span'),
-        documentsButton : () => cy.get('div#nav-docs'),
-        messagesButton : () => cy.get('div#nav-mail')
-    }
+        {
+            userSection: () => cy.get('.user > span'),
+            documentsButton: () => cy.get('div#nav-docs'),
+            messagesButton: () => cy.get('div#nav-mail')
+        }
 
-    navigateToDocuments()
-    {
+    navigateToDocuments() {
         this.elements.documentsButton().click()
     }
 
-    navigateToMessages()
-    {
+    navigateToMessages() {
         this.elements.messagesButton().click()
     }
 }

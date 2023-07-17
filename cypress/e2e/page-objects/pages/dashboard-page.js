@@ -1,12 +1,10 @@
-class DashboardPage
-{
+class DashboardPage {
     elements =
-    {
-        loginButton: () => cy.get('#signin')
-    }
+        {
+            loginButton: () => cy.get('#signin')
+        }
 
-    clickLoginButton()
-    {
+    clickLoginButton() {
         this.elements.loginButton().click()
     }
 }

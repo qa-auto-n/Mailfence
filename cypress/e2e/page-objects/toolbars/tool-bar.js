@@ -1,35 +1,29 @@
-class ToolBar 
-{
-    elements = 
-    {
-        selectAllCheckbox : () => cy.get('div.icon.icon-checkb'),
-        refreshButton: () => cy.get('[title="Refresh"]'),
-        etcButton: () => cy.get('#toolbar_more .icon-Etc'),
-        deleteInTrashButton: () => cy.get('div[title="Delete"]')
-    }
+class ToolBar {
+    elements =
+        {
+            selectAllCheckbox: () => cy.get('div.icon.icon-checkb'),
+            refreshButton: () => cy.get('[title="Refresh"]'),
+            etcButton: () => cy.get('#toolbar_more .icon-Etc'),
+            deleteInTrashButton: () => cy.get('div[title="Delete"]')
+        }
 
-    clickRefreshButton(options = {})
-    {
+    clickRefreshButton(options = {}) {
         this.elements.refreshButton().click()
         const { timeout = null } = options
-        if(timeout != null)
-        {
-            cy.wait(timeout) 
+        if (timeout != null) {
+            cy.wait(timeout)
         }
     }
 
-    selectAllFiles()
-    {
+    selectAllFiles() {
         this.elements.selectAllCheckbox().click()
     }
 
-    clickEtcButton()
-    {
+    clickEtcButton() {
         this.elements.etcButton().click()
     }
 
-    clickDeleteButtonInTrash()
-    {
+    clickDeleteButtonInTrash() {
         this.elements.deleteInTrashButton().click()
     }
 }

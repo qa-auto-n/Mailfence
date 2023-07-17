@@ -5,7 +5,7 @@ module.exports = defineConfig({
   env: {
     url: 'https://mailfence.com/'
   },
-  defaultCommandTimeout : 6000,
+  defaultCommandTimeout: 6000,
   e2e: {
     setupNodeEvents(on, config) {
       on('task', {

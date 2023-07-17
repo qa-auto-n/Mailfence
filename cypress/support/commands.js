@@ -2,21 +2,20 @@ import 'cypress-file-upload'
 
 const path = require('path')
 
-Cypress.Commands.add('uploadDocument', (filepath) =>
-{
-    cy.get('input[type="file"]').attachFile(filepath)
+Cypress.Commands.add('uploadDocument', (filepath) => {
+  cy.get('input[type="file"]').attachFile(filepath)
 })
 
 Cypress.Commands.add('generateFixtureFile', (fileName, content) => {
-    const fixtureDirectory = Cypress.config('fixturesFolder')
-    const filePath = path.join(fixtureDirectory, fileName)
+  const fixtureDirectory = Cypress.config('fixturesFolder')
+  const filePath = path.join(fixtureDirectory, fileName)
 
-    cy.writeFile(filePath, content)
+  cy.writeFile(filePath, content)
 })
 
 Cypress.Commands.add('deleteFixtureFile', (fileName) => {
-    const filePath = Cypress.config('fixturesFolder') + `/${fileName}`;
-    cy.task('deleteFile', filePath);
+  const filePath = Cypress.config('fixturesFolder') + `/${fileName}`;
+  cy.task('deleteFile', filePath);
 })
 
 Cypress.Commands.add('getIframeBody', { prevSubject: 'element' }, ($iframe) => {
