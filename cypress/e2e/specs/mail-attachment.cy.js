@@ -41,11 +41,7 @@ describe('Mail Attachment', function() {
       const password = Cypress.env('password')
       
       // Log in
-      cy.visit(Cypress.env('url'), {
-        onBeforeLoad: (win) => {
-          cy.stub(win, 'confirm').returns(true)
-        }
-      })
+      cy.visit(Cypress.env('url'))
 
       dashboardPage.clickLoginButton()
       loginPage.login(email, password)
