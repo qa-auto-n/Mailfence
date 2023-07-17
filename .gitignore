@@ -1,0 +1,9 @@
+# Cypress directories
+/cypress/screenshots/
+/cypress/videos/
+
+# Ignore node_modules directory
+node_modules/
+
+# debug
+npm-debug.log*
