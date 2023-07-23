@@ -1,8 +1,7 @@
 class ConfirmDeletionWindow {
 
     elements = {
-        yesButton: () => cy.get('#dialBtn_YES:visible'),
-        confirmationWindow: () => cy.get('#msgBox')
+        yesButton: () => cy.get('#dialBtn_YES')
     }
 
     clickYesBtn() {

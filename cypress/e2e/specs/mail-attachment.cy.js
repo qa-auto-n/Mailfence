@@ -4,6 +4,7 @@ import UserHomePage from "../page-objects/pages/user-home-page"
 import DocumentsPage from "../page-objects/pages/documents-page"
 import MessagesPage from "../page-objects/pages/messages-page"
 import ToolBar from "../page-objects/toolbars/tool-bar"
+import Destination from "../page-objects/enums/destination"
 
 const dashboardPage = new DashboardPage()
 const loginPage = new LoginPage()
@@ -26,11 +27,12 @@ describe('Mail Attachment', function () {
   })
 
   after(function () {
+    userHomePage.reloadPageAndWait()
     documentsPage.clearUploadedDocuments()
-    documentsPage.clearTrashFolder()
+    userHomePage.clearTrashFolder(Destination.DOCUMENTS)
     messagesPage.clearInboxFolder()
     messagesPage.clearSentFolder()
-    messagesPage.clearTrashFolder()
+    userHomePage.clearTrashFolder(Destination.MESSAGES)
     cy.deleteFixtureFile(this.letterInfo.letterFileName)
   })
 

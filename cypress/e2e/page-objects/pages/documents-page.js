@@ -1,8 +1,6 @@
-import ConfirmDeletionWindow from "../modal-windows/confirm-deletion-window"
 import ToolBar from "../toolbars/tool-bar"
 import UserHomePage from "./user-home-page"
 
-const confirmDeletionWindow = new ConfirmDeletionWindow()
 const toolBar = new ToolBar()
 const userHomePage = new UserHomePage()
 
@@ -12,7 +10,7 @@ class DocumentsPage {
             singleDocumentblock: () => cy.get('.trow'),
             docRenameOption: () => cy.get('#doc_rename'),
             docRenameInput: () => cy.get('#rename_input'),
-            deleteButton: () => cy.get('#doc_delete'),
+            deleteButton: () => cy.get('#doc_trash'),
             trashFolder: () => cy.get('div#doc_tree_trash'),
             sortBy: () => cy.get('.sortBy')
         }
@@ -42,16 +40,6 @@ class DocumentsPage {
 
     openTrashFolder() {
         this.elements.trashFolder().click()
-    }
-
-    clearTrashFolder() {
-        userHomePage.navigateToDocuments()
-        this.openTrashFolder()
-        toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.selectAllFiles()
-        toolBar.clickEtcButton()
-        toolBar.clickDeleteButtonInTrash()
-        confirmDeletionWindow.clickYesBtn()
     }
 }
 

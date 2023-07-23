@@ -1,7 +1,7 @@
 class SaveInDocumentsWindow {
 
     elements = {
-        myDocuments: () => cy.get('.GCSDBRWBJY .treeItemRoot > .treeItemLabel'),
+        myDocuments: () => cy.get('.treeItemLabel:contains("My documents"):visible'),
         saveButton: () => cy.get('#dialBtn_OK:visible')
     }
 

@@ -1,10 +1,8 @@
 import SaveInDocumentsWindow from "../modal-windows/save-in-documents-window"
-import ConfirmDeletionWindow from "../modal-windows/confirm-deletion-window"
 import ToolBar from "../toolbars/tool-bar"
 import UserHomePage from "./user-home-page"
 
 const saveInDocumentsWindow = new SaveInDocumentsWindow()
-const confirmDeletionWindow = new ConfirmDeletionWindow()
 const toolBar = new ToolBar()
 const userHomePage = new UserHomePage()
 
@@ -81,16 +79,6 @@ class MessagesPage {
         toolBar.selectAllFiles()
         toolBar.clickEtcButton()
         this.elements.deleteButton().click()
-    }
-
-    clearTrashFolder() {
-        userHomePage.navigateToMessages()
-        cy.contains('Trash').click()
-        toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.selectAllFiles()
-        toolBar.clickEtcButton()
-        toolBar.clickDeleteButtonInTrash()
-        confirmDeletionWindow.clickYesBtn()
     }
 }
 

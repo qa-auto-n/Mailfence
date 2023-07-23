@@ -1,18 +1,60 @@
+import ConfirmDeletionWindow from "../modal-windows/confirm-deletion-window"
+import ToolBar from "../toolbars/tool-bar"
+import Destination from "../enums/destination"
+
+const confirmDeletionWindow = new ConfirmDeletionWindow()
+const toolBar = new ToolBar()
+
 class UserHomePage {
-    elements =
-        {
-            userSection: () => cy.get('.user > span'),
-            documentsButton: () => cy.get('div#nav-docs'),
-            messagesButton: () => cy.get('div#nav-mail')
+  elements =
+    {
+      userSection: () => cy.get('.user > span'),
+      documentsButton: () => cy.get('div#nav-docs'),
+      messagesButton: () => cy.get('div#nav-mail')
+    }
+
+  navigateToDocuments() {
+    this.elements.documentsButton().should('be.visible').click({ force: true })
+  }
+
+  navigateToMessages() {
+    this.elements.messagesButton().should('be.visible').click({ force: true })
+  }
+
+  reloadPageAndWait() {
+    cy.reload().then(() => {
+      cy.get('i').then(($el) => {
+        if ($el.is(':visible')) {
+          cy.log('Spinner is still be visible but it is not relevant')
+          cy.wait(5000)
+        } else {
+          cy.get('i').should('not.be.visible')
         }
-
-    navigateToDocuments() {
-        this.elements.documentsButton().click()
+      })
     }
+    )
+  }
 
-    navigateToMessages() {
-        this.elements.messagesButton().click()
+  clearTrashFolder(destination) {
+    switch (destination) {
+      case Destination.DOCUMENTS:
+        this.navigateToDocuments()
+        cy.contains('Trash').click({ force: true })
+        break
+      case Destination.MESSAGES:
+        this.navigateToMessages()
+        cy.contains('Trash').click({ force: true })
+        break
+      default:
+        return cy.log('Trash folder is not reachable')
     }
+    toolBar.clickRefreshButton({ timeout: 1000 })
+    toolBar.selectAllFiles()
+    toolBar.clickEtcButton()
+    toolBar.clickDeleteButtonInTrash()
+    confirmDeletionWindow.clickYesBtn()
+  }
+
 }
 
 export default UserHomePage

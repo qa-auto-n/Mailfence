@@ -1,7 +1,7 @@
 class ToolBar {
     elements =
         {
-            selectAllCheckbox: () => cy.get('div.icon.icon-checkb'),
+            selectAllCheckbox: () => cy.get('[title = "Select all"] .icon'),
             refreshButton: () => cy.get('[title="Refresh"]'),
             etcButton: () => cy.get('#toolbar_more .icon-Etc'),
             deleteInTrashButton: () => cy.get('div[title="Delete"]')
@@ -16,7 +16,7 @@ class ToolBar {
     }
 
     selectAllFiles() {
-        this.elements.selectAllCheckbox().click()
+        this.elements.selectAllCheckbox().click({ force: true })
     }
 
     clickEtcButton() {
