@@ -39,15 +39,14 @@ class UserHomePage {
     switch (destination) {
       case Destination.DOCUMENTS:
         this.navigateToDocuments()
-        cy.contains('Trash').click({ force: true })
         break
       case Destination.MESSAGES:
         this.navigateToMessages()
-        cy.contains('Trash').click({ force: true })
         break
       default:
-        return cy.log('Trash folder is not reachable')
+        return cy.log('Destination is not reachable')
     }
+    cy.contains('Trash').click({ force: true })
     toolBar.clickRefreshButton({ timeout: 1000 })
     toolBar.selectAllFiles()
     toolBar.clickEtcButton()
