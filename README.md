@@ -4,8 +4,8 @@ This repository contains e2e test(s) for the **mailfence.com** website using the
 ## :rocket: Prerequisites
 Before running the tests, make sure you have the following software installed:
 
-* Node.js
-* npm
+* [Node.js](https://nodejs.org/en/download/current)
+* [npm](https://github.com/npm/cli)
 
 ## Installation
 To install the necessary dependencies, run the following command in your terminal:
