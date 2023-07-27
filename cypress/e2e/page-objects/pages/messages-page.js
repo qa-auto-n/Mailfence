@@ -1,10 +1,10 @@
-import SaveInDocumentsWindow from "../modal-windows/save-in-documents-window"
-import ToolBar from "../toolbars/tool-bar"
-import UserHomePage from "./user-home-page"
+import SaveInDocumentsWindow from "../page-components/save-in-documents-window"
+import ToolBar from "../page-components/tool-bar"
+import NavigationToolbar from "../page-components/navigation-tool-bar"
 
 const saveInDocumentsWindow = new SaveInDocumentsWindow()
 const toolBar = new ToolBar()
-const userHomePage = new UserHomePage()
+const navigationToolbar = new NavigationToolbar()
 
 class MessagesPage {
     elements =
@@ -33,10 +33,6 @@ class MessagesPage {
         }
     }
 
-    openNewLetterForm() {
-        this.elements.newButton().click()
-    }
-
     fillLetter(to, subject, content = '') {
         this.elements.mailTo().type(to).type('{enter}')
         this.elements.mailSubject().type(subject)
@@ -50,10 +46,6 @@ class MessagesPage {
         this.elements.addDocumentsOkButton().click()
     }
 
-    sendLetter() {
-        this.elements.sendLetterButton().click()
-    }
-
     openLetter() {
         this.elements.unreadLetters().eq(0).click()
     }
@@ -61,11 +53,12 @@ class MessagesPage {
     saveAttachmentInDocuments() {
         this.elements.attachmentArrowDown().click({ force: true })
         cy.contains('Save in Documents').click()
-        saveInDocumentsWindow.chooseMyDocumentsAndClickSaveButton()
+        saveInDocumentsWindow.elements.myDocuments().click()
+        saveInDocumentsWindow.clickSaveButton()
     }
 
     clearInboxFolder() {
-        userHomePage.navigateToMessages()
+        navigationToolbar.navigateToMessages()
         this.clickInbox()
         toolBar.clickRefreshButton({ timeout: 1000 })
         toolBar.selectAllFiles()
@@ -73,7 +66,7 @@ class MessagesPage {
     }
 
     clearSentFolder() {
-        userHomePage.navigateToMessages()
+        navigationToolbar.navigateToMessages()
         this.elements.sentFolder().click()
         toolBar.clickRefreshButton({ timeout: 1000 })
         toolBar.selectAllFiles()

@@ -5,8 +5,7 @@ class SaveInDocumentsWindow {
         saveButton: () => cy.get('#dialBtn_OK:visible')
     }
 
-    chooseMyDocumentsAndClickSaveButton() {
-        this.elements.myDocuments().click()
+    clickSaveButton() {
         this.elements.saveButton().should("not.contain.class", "GCSDBRWBMB").click()
     }
 }

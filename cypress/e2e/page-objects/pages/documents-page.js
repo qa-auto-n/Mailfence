@@ -1,8 +1,8 @@
-import ToolBar from "../toolbars/tool-bar"
-import UserHomePage from "./user-home-page"
+import ToolBar from "../page-components/tool-bar"
+import NavigationToolbar from "../page-components/navigation-tool-bar"
 
 const toolBar = new ToolBar()
-const userHomePage = new UserHomePage()
+const navigationToolbar = new NavigationToolbar()
 
 class DocumentsPage {
     elements =
@@ -20,7 +20,7 @@ class DocumentsPage {
     }
 
     clearUploadedDocuments() {
-        userHomePage.navigateToDocuments()
+        navigationToolbar.navigateToDocuments()
         cy.contains('My documents').click()
         toolBar.clickRefreshButton({ timeout: 1000 })
         toolBar.selectAllFiles()
@@ -36,10 +36,6 @@ class DocumentsPage {
         this.elements.docRenameOption().click()
         this.elements.docRenameInput().type(newTitle).type('{enter}')
         cy.dragAndDrop(this.elements.singleDocumentblock().eq(0), this.elements.trashFolder())
-    }
-
-    openTrashFolder() {
-        this.elements.trashFolder().click()
     }
 }
 

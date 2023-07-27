@@ -1,11 +1,11 @@
-import ConfirmDeletionWindow from "../modal-windows/confirm-deletion-window"
-import ToolBar from "../toolbars/tool-bar"
+import ConfirmDeletionWindow from "./confirm-deletion-window"
+import ToolBar from "./tool-bar"
 import Destination from "../enums/destination"
 
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 const toolBar = new ToolBar()
 
-class UserHomePage {
+class NavigationToolBar {
   elements =
     {
       userSection: () => cy.get('.user > span'),
@@ -56,4 +56,4 @@ class UserHomePage {
 
 }
 
-export default UserHomePage
+export default NavigationToolBar
