@@ -1,37 +1,31 @@
+import MessagesTreePanel from "../page-components/messages-tree-panel"
 import SaveInDocumentsWindow from "../page-components/save-in-documents-window"
+import BasePage from "./base-page"
+import NavigationToolBar from "../page-components/navigation-tool-bar"
 import ToolBar from "../page-components/tool-bar"
-import NavigationToolbar from "../page-components/navigation-tool-bar"
+import MessagesToolBar from "../page-components/messages-toolbar"
+import ConfirmDeletionWindow from "../page-components/confirm-deletion-window"
 
 const saveInDocumentsWindow = new SaveInDocumentsWindow()
+const messagesTreePanel = new MessagesTreePanel()
+const navigationToolbar = new NavigationToolBar()
 const toolBar = new ToolBar()
-const navigationToolbar = new NavigationToolbar()
+const messagesToolbar = new MessagesToolBar()
+const confirmDeletionWindow = new ConfirmDeletionWindow()
 
-class MessagesPage {
+class MessagesPage extends BasePage {
     elements =
         {
-            inbox: () => cy.get('#treeInbox'),
-            sentFolder: () => cy.get('#treeSend'),
-            newButton: () => cy.get('#mailNewBtn'),
             mailTo: () => cy.get('#mailTo'),
             mailSubject: () => cy.get('#mailSubject'),
             contentIframe: () => cy.get('iframe[id^="gwt-uid-"]'),
             attachmentDropdown: () => cy.get('a:contains("Attachment")'),
             attachmentDropdownToolOption: () => cy.get('.menu a:contains("tool")'),
             addDocumentsOkButton: () => cy.get('#dialBtn_OK'),
-            sendLetterButton: () => cy.get('#mailSend'),
             unreadLetters: () => cy.get('.listUnread'),
             attachmentArrowDown: () => cy.get('a > .icon-Arrow-down'),
-            addedAttachment: () => cy.get('[_type="att"]'),
-            deleteButton: () => cy.get('div[title="To Trash"]')
+            addedAttachment: () => cy.get('[_type="att"]')
         }
-
-    clickInbox(options = {}) {
-        this.elements.inbox().click()
-        const { timeout = null } = options
-        if (timeout != null) {
-            cy.wait(timeout)
-        }
-    }
 
     fillLetter(to, subject, content = '') {
         this.elements.mailTo().type(to).type('{enter}')
@@ -46,7 +40,7 @@ class MessagesPage {
         this.elements.addDocumentsOkButton().click()
     }
 
-    openLetter() {
+    openFirstUnreadLetter() {
         this.elements.unreadLetters().eq(0).click()
     }
 
@@ -59,20 +53,30 @@ class MessagesPage {
 
     clearInboxFolder() {
         navigationToolbar.navigateToMessages()
-        this.clickInbox()
+        messagesTreePanel.clickInbox()
         toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.selectAllFiles()
-        this.elements.deleteButton().click()
+        toolBar.elements.selectAllCheckbox().click()
+        messagesToolbar.elements.deleteButton().click()
     }
 
     clearSentFolder() {
         navigationToolbar.navigateToMessages()
-        this.elements.sentFolder().click()
+        messagesTreePanel.elements.sentFolder().click()
         toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.selectAllFiles()
-        toolBar.clickEtcButton()
-        this.elements.deleteButton().click()
+        toolBar.elements.selectAllCheckbox().click()
+        toolBar.elements.etcButton().click()
+        messagesToolbar.elements.deleteButton().click()
     }
+
+    clearTrashFolder() {
+        navigationToolbar.navigateToMessages()
+        cy.contains('Trash').click({ force: true })
+        toolBar.clickRefreshButton({ timeout: 1000 })
+        toolBar.elements.selectAllCheckbox().click()
+        toolBar.elements.etcButton().click()
+        toolBar.elements.deleteInTrashButton().click()
+        confirmDeletionWindow.elements.yesButton().click()
+      }
 }
 
 export default MessagesPage

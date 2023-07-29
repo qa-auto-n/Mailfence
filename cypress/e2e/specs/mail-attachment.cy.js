@@ -4,7 +4,10 @@ import NavigationToolbar from "../page-objects/page-components/navigation-tool-b
 import DocumentsPage from "../page-objects/pages/documents-page"
 import MessagesPage from "../page-objects/pages/messages-page"
 import ToolBar from "../page-objects/page-components/tool-bar"
-import Destination from "../page-objects/enums/destination"
+import MessagesTreePanel from "../page-objects/page-components/messages-tree-panel"
+import MessagesToolBar from "../page-objects/page-components/messages-toolbar"
+import BasePage from "../page-objects/pages/base-page"
+import DocumentsTreePanel from "../page-objects/page-components/documents-tree-panel"
 
 const dashboardPage = new DashboardPage()
 const loginPage = new LoginPage()
@@ -12,6 +15,9 @@ const navigationToolbar = new NavigationToolbar()
 const documentsPage = new DocumentsPage()
 const messagesPage = new MessagesPage()
 const toolBar = new ToolBar()
+const messagesTreePanel = new MessagesTreePanel()
+const messagesToolbar = new MessagesToolBar()
+const documentsTreePanel = new DocumentsTreePanel()
 
 describe('Mail Attachment', function () {
 
@@ -48,35 +54,35 @@ describe('Mail Attachment', function () {
 
     // Send email with attached file to myself
     navigationToolbar.navigateToMessages()
-    messagesPage.elements.newButton().click()
+    messagesToolbar.elements.newButton().click()
     messagesPage.fillLetter(email, this.letterInfo.subject, this.letterInfo.content)
     messagesPage.addAttachmentFromDocuments(this.letterInfo.letterFileName)
     messagesPage.elements.addedAttachment().should('contain', this.letterInfo.letterFileName)
-    messagesPage.elements.sendLetterButton().click()
+    messagesToolbar.elements.sendLetterButton().click()
 
     // Check that email recieved
-    messagesPage.clickInbox({ timeout: 5000 })
+    messagesTreePanel.clickInbox({ timeout: 5000 })
     toolBar.clickRefreshButton()
     messagesPage.elements.unreadLetters().eq(0).should('contain', this.letterInfo.subject)
 
     // Open recieved email and save the attached file to My Documents
-    messagesPage.openLetter()
+    messagesPage.openFirstUnreadLetter()
     messagesPage.saveAttachmentInDocuments()
 
     // Open Documents, rename just saved file and move it from My documents to "Trash"
     navigationToolbar.navigateToDocuments()
     documentsPage.renameAndMoveLastSavedFileToTrash(this.letterInfo.newFileTitle)
-    documentsPage.elements.trashFolder().click()
+    documentsTreePanel.elements.trashFolder().click()
     cy.get(`[title="${this.letterInfo.newFileTitle}.txt"]`).should('exist')
   })
 
   after(function () {
-    navigationToolbar.reloadPageAndWait()
+    BasePage.reloadPageAndWait()
     documentsPage.clearUploadedDocuments()
-    navigationToolbar.clearTrashFolder(Destination.DOCUMENTS)
+    documentsPage.clearTrashFolder()
     messagesPage.clearInboxFolder()
     messagesPage.clearSentFolder()
-    navigationToolbar.clearTrashFolder(Destination.MESSAGES)
+    messagesPage.clearTrashFolder()
     cy.deleteFixtureFile(this.letterInfo.letterFileName)
   })
 })

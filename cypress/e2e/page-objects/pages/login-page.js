@@ -1,4 +1,6 @@
-class LoginPage {
+import BasePage from "./base-page"
+
+class LoginPage extends BasePage {
     elements =
         {
             emailField: () => cy.get('[name="UserID"]'),
