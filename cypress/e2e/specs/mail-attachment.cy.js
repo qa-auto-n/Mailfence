@@ -3,7 +3,6 @@ import LoginPage from "../page-objects/pages/login-page"
 import NavigationToolbar from "../page-objects/page-components/navigation-tool-bar"
 import DocumentsPage from "../page-objects/pages/documents-page"
 import MessagesPage from "../page-objects/pages/messages-page"
-import ToolBar from "../page-objects/page-components/tool-bar"
 import MessagesTreePanel from "../page-objects/page-components/messages-tree-panel"
 import MessagesToolBar from "../page-objects/page-components/messages-toolbar"
 import BasePage from "../page-objects/pages/base-page"
@@ -14,7 +13,6 @@ const loginPage = new LoginPage()
 const navigationToolbar = new NavigationToolbar()
 const documentsPage = new DocumentsPage()
 const messagesPage = new MessagesPage()
-const toolBar = new ToolBar()
 const messagesTreePanel = new MessagesTreePanel()
 const messagesToolbar = new MessagesToolBar()
 const documentsTreePanel = new DocumentsTreePanel()
@@ -62,11 +60,14 @@ describe('Mail Attachment', function () {
 
     // Check that email recieved
     messagesTreePanel.clickInbox({ timeout: 5000 })
-    toolBar.clickRefreshButton()
-    messagesPage.elements.unreadLetters().eq(0).should('contain', this.letterInfo.subject)
+    messagesToolbar.clickRefreshButton()
+    messagesPage.elements.unreadLetters()
+      .find('div.listSubject')
+      .contains(this.letterInfo.subject)
+      .should('exist')
 
     // Open recieved email and save the attached file to My Documents
-    messagesPage.openFirstUnreadLetter()
+    messagesPage.openUnreadLetterByTitle(this.letterInfo.subject)
     messagesPage.saveAttachmentInDocuments()
 
     // Open Documents, rename just saved file and move it from My documents to "Trash"

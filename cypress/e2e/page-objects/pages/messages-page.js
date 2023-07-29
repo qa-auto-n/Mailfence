@@ -1,15 +1,15 @@
+/// <reference types="Cypress" />
+
 import MessagesTreePanel from "../page-components/messages-tree-panel"
 import SaveInDocumentsWindow from "../page-components/save-in-documents-window"
 import BasePage from "./base-page"
 import NavigationToolBar from "../page-components/navigation-tool-bar"
-import ToolBar from "../page-components/tool-bar"
 import MessagesToolBar from "../page-components/messages-toolbar"
 import ConfirmDeletionWindow from "../page-components/confirm-deletion-window"
 
 const saveInDocumentsWindow = new SaveInDocumentsWindow()
 const messagesTreePanel = new MessagesTreePanel()
 const navigationToolbar = new NavigationToolBar()
-const toolBar = new ToolBar()
 const messagesToolbar = new MessagesToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
@@ -40,8 +40,12 @@ class MessagesPage extends BasePage {
         this.elements.addDocumentsOkButton().click()
     }
 
-    openFirstUnreadLetter() {
-        this.elements.unreadLetters().eq(0).click()
+    openUnreadLetterByTitle(title) {
+        this.elements.unreadLetters()
+            .find('div.listSubject')
+            .contains(title)
+            .first()
+            .click()
     }
 
     saveAttachmentInDocuments() {
@@ -54,29 +58,29 @@ class MessagesPage extends BasePage {
     clearInboxFolder() {
         navigationToolbar.navigateToMessages()
         messagesTreePanel.clickInbox()
-        toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.elements.selectAllCheckbox().click()
+        messagesToolbar.clickRefreshButton({ timeout: 1000 })
+        messagesToolbar.elements.selectAllCheckbox().click()
         messagesToolbar.elements.deleteButton().click()
     }
 
     clearSentFolder() {
         navigationToolbar.navigateToMessages()
         messagesTreePanel.elements.sentFolder().click()
-        toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.elements.selectAllCheckbox().click()
-        toolBar.elements.etcButton().click()
+        messagesToolbar.clickRefreshButton({ timeout: 1000 })
+        messagesToolbar.elements.selectAllCheckbox().click()
+        messagesToolbar.elements.etcButton().click()
         messagesToolbar.elements.deleteButton().click()
     }
 
     clearTrashFolder() {
         navigationToolbar.navigateToMessages()
         cy.contains('Trash').click({ force: true })
-        toolBar.clickRefreshButton({ timeout: 1000 })
-        toolBar.elements.selectAllCheckbox().click()
-        toolBar.elements.etcButton().click()
-        toolBar.elements.deleteInTrashButton().click()
+        messagesToolbar.clickRefreshButton({ timeout: 1000 })
+        messagesToolbar.elements.selectAllCheckbox().click()
+        messagesToolbar.elements.etcButton().click()
+        messagesToolbar.elements.deleteInTrashButton().click()
         confirmDeletionWindow.elements.yesButton().click()
-      }
+    }
 }
 
 export default MessagesPage
