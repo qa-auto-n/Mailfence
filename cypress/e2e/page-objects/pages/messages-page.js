@@ -1,6 +1,5 @@
 import MessagesTreePanel from "../page-components/messages-tree-panel"
 import SaveInDocumentsWindow from "../page-components/save-in-documents-window"
-import BasePage from "./base-page"
 import NavigationToolBar from "../page-components/navigation-tool-bar"
 import MessagesToolBar from "../page-components/messages-toolbar"
 import ConfirmDeletionWindow from "../page-components/confirm-deletion-window"
@@ -11,7 +10,7 @@ const navigationToolbar = new NavigationToolBar()
 const messagesToolbar = new MessagesToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
-class MessagesPage extends BasePage {
+class MessagesPage {
     elements =
         {
             mailTo: () => cy.get('#mailTo'),
@@ -53,28 +52,39 @@ class MessagesPage extends BasePage {
         saveInDocumentsWindow.clickSaveButton()
     }
 
-    clearInboxFolder() {
+    clearInboxByLetterSubject(letterSubjects) {
         navigationToolbar.navigateToMessages()
         messagesTreePanel.clickInbox()
-        messagesToolbar.clickRefreshButton({ timeout: 1000 })
-        messagesToolbar.elements.selectAllCheckbox().click()
+        cy.wrap(letterSubjects).each(subject => {
+            cy.get(`[title="${subject}"]`).parents('tr').within(() => {
+                cy.get('.checkIcon').click()
+            })
+        })
         messagesToolbar.elements.deleteButton().click()
     }
 
-    clearSentFolder() {
+    clearSentFolder(letterSubjects) {
         navigationToolbar.navigateToMessages()
         messagesTreePanel.elements.sentFolder().click()
-        messagesToolbar.clickRefreshButton({ timeout: 1000 })
-        messagesToolbar.elements.selectAllCheckbox().click()
+        cy.wrap(letterSubjects).each(subject => {
+            cy.get(`[title="${subject}"]`).parents('tr').within(() => {
+                cy.get('.checkIcon').click()
+            })
+        })
         messagesToolbar.elements.etcButton().click()
         messagesToolbar.elements.deleteButton().click()
     }
 
-    clearTrashFolder() {
+    clearTrashFolder(letterSubjects) {
         navigationToolbar.navigateToMessages()
-        cy.contains('Trash').click({ force: true })
-        messagesToolbar.clickRefreshButton({ timeout: 1000 })
-        messagesToolbar.elements.selectAllCheckbox().click()
+        messagesTreePanel.elements.trashFolder().click()
+        cy.wrap(letterSubjects).each(subject => {
+            cy.get(`[title="${subject}"]`).each($element => {
+                cy.wrap($element).parents('tr').within(() => {
+                    cy.get('.checkIcon').click()
+                })
+            })
+        })
         messagesToolbar.elements.etcButton().click()
         messagesToolbar.elements.deleteInTrashButton().click()
         confirmDeletionWindow.elements.yesButton().click()
