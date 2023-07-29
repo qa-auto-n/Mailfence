@@ -1,5 +1,3 @@
-/// <reference types="Cypress" />
-
 import MessagesTreePanel from "../page-components/messages-tree-panel"
 import SaveInDocumentsWindow from "../page-components/save-in-documents-window"
 import BasePage from "./base-page"

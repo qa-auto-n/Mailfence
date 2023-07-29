@@ -49,7 +49,7 @@ class DocumentsPage extends BasePage {
         documentsToolBar.elements.etcButton().click()
         documentsToolBar.elements.deleteInTrashButton().click()
         confirmDeletionWindow.elements.yesButton().click()
-      }
+    }
 }
 
 export default DocumentsPage

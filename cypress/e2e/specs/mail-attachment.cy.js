@@ -36,7 +36,6 @@ describe('Mail Attachment', function () {
 
     // Log in
     cy.visit(Cypress.env('url'))
-
     dashboardPage.clickLoginButton()
     loginPage.login(email, password)
     navigationToolbar.elements.userSection().then(function (name) {
