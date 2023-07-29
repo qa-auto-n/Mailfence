@@ -1,5 +1,4 @@
 import NavigationToolbar from "../page-components/navigation-tool-bar"
-import BasePage from "./base-page"
 import DocumentsTreePanel from "../page-components/documents-tree-panel"
 import DocumentsToolBar from "../page-components/documents-toolbar"
 import ConfirmDeletionWindow from "../page-components/confirm-deletion-window"
@@ -9,7 +8,7 @@ const documentsTreePanel = new DocumentsTreePanel()
 const documentsToolBar = new DocumentsToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
-class DocumentsPage extends BasePage {
+class DocumentsPage {
     elements =
         {
             singleDocumentblock: () => cy.get('.trow'),
@@ -22,15 +21,6 @@ class DocumentsPage extends BasePage {
         return cy.get(`[title$="${fileName}"]`)
     }
 
-    clearUploadedDocuments() {
-        navigationToolbar.navigateToDocuments()
-        cy.contains('My documents').click()
-        documentsToolBar.clickRefreshButton({ timeout: 1000 })
-        documentsToolBar.elements.selectAllCheckbox().click()
-        documentsToolBar.elements.etcButton().click()
-        documentsToolBar.elements.deleteButton().click()
-    }
-
     renameAndMoveLastSavedFileToTrash(newTitle) {
         this.elements.sortBy().click()
         cy.contains('Date').click()
@@ -41,11 +31,28 @@ class DocumentsPage extends BasePage {
         cy.dragAndDrop(this.elements.singleDocumentblock().eq(0), documentsTreePanel.elements.trashFolder())
     }
 
-    clearTrashFolder() {
+    clearMyDocumentByTitle(fileNames) {
         navigationToolbar.navigateToDocuments()
-        cy.contains('Trash').click({ force: true })
-        documentsToolBar.clickRefreshButton({ timeout: 1000 })
-        documentsToolBar.elements.selectAllCheckbox().click()
+        documentsTreePanel.elements.myDocuments().click()
+        cy.wrap(fileNames).each(fileName => {
+            let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))
+            cy.get(`[title*="${filenameWithoutExtension}"]`).parents('tr').within(() => {
+                cy.get('.checkIcon').click()
+            })
+        })
+        documentsToolBar.elements.etcButton().click()
+        documentsToolBar.elements.deleteButton().click()
+    }
+
+    clearTrashFolderByTitle(fileNames) {
+        navigationToolbar.navigateToDocuments()
+        documentsTreePanel.elements.trashFolder().click({ force: true })
+        cy.wrap(fileNames).each(fileName => {
+            let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))
+            cy.get(`[title*="${filenameWithoutExtension}"]`).parents('tr').within(() => {
+                cy.get('.checkIcon').click()
+            })
+        })
         documentsToolBar.elements.etcButton().click()
         documentsToolBar.elements.deleteInTrashButton().click()
         confirmDeletionWindow.elements.yesButton().click()

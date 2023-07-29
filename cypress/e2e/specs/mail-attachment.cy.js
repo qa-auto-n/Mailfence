@@ -5,8 +5,8 @@ import DocumentsPage from "../page-objects/pages/documents-page"
 import MessagesPage from "../page-objects/pages/messages-page"
 import MessagesTreePanel from "../page-objects/page-components/messages-tree-panel"
 import MessagesToolBar from "../page-objects/page-components/messages-toolbar"
-import BasePage from "../page-objects/pages/base-page"
 import DocumentsTreePanel from "../page-objects/page-components/documents-tree-panel"
+import { generateUpdatedFilename } from '../../support/filenameUtils'
 
 const dashboardPage = new DashboardPage()
 const loginPage = new LoginPage()
@@ -18,6 +18,9 @@ const messagesToolbar = new MessagesToolBar()
 const documentsTreePanel = new DocumentsTreePanel()
 
 describe('Mail Attachment', function () {
+  let uniqueFileName
+  let uniqueLetterSubject
+  let uniqueNewFileName
 
   before(function () {
     cy.fixture('user-info').then(function (userData) {
@@ -26,7 +29,10 @@ describe('Mail Attachment', function () {
 
     cy.fixture('letter-info').then(function (letterInfo) {
       this.letterInfo = letterInfo
-      cy.generateFixtureFile(letterInfo.letterFileName, letterInfo.letterText)
+      uniqueFileName = generateUpdatedFilename(letterInfo.letterFileName)
+      uniqueLetterSubject = generateUpdatedFilename(letterInfo.subject)
+      uniqueNewFileName = generateUpdatedFilename(letterInfo.newFileTitle)
+      cy.generateFixtureFile(uniqueFileName, letterInfo.letterText)
     })
   })
 
@@ -36,7 +42,7 @@ describe('Mail Attachment', function () {
 
     // Log in
     cy.visit(Cypress.env('url'))
-    dashboardPage.clickLoginButton()
+    dashboardPage.elements.loginButton().click()
     loginPage.login(email, password)
     navigationToolbar.elements.userSection().then(function (name) {
       const actualName = name.text()
@@ -44,45 +50,44 @@ describe('Mail Attachment', function () {
     })
 
     // Attach new .txt file
-    let fileToUpload = this.letterInfo.letterFileName
     navigationToolbar.navigateToDocuments()
-    cy.uploadDocument(fileToUpload)
-    documentsPage.getUploadedFileNameByTitle(fileToUpload).should('be.visible')
+    cy.uploadDocument(uniqueFileName)
+    documentsPage.getUploadedFileNameByTitle(uniqueFileName).should('be.visible')
 
     // Send email with attached file to myself
     navigationToolbar.navigateToMessages()
     messagesToolbar.elements.newButton().click()
-    messagesPage.fillLetter(email, this.letterInfo.subject, this.letterInfo.content)
-    messagesPage.addAttachmentFromDocuments(this.letterInfo.letterFileName)
-    messagesPage.elements.addedAttachment().should('contain', this.letterInfo.letterFileName)
+    messagesPage.fillLetter(email, uniqueLetterSubject, this.letterInfo.content)
+    messagesPage.addAttachmentFromDocuments(uniqueFileName)
+    messagesPage.elements.addedAttachment().should('contain', uniqueFileName)
     messagesToolbar.elements.sendLetterButton().click()
 
     // Check that email recieved
     messagesTreePanel.clickInbox({ timeout: 5000 })
-    messagesToolbar.clickRefreshButton()
+    messagesToolbar.elements.refreshButton().click()
     messagesPage.elements.unreadLetters()
       .find('div.listSubject')
-      .contains(this.letterInfo.subject)
+      .contains(uniqueLetterSubject)
       .should('exist')
 
     // Open recieved email and save the attached file to My Documents
-    messagesPage.openUnreadLetterByTitle(this.letterInfo.subject)
+    messagesPage.openUnreadLetterByTitle(uniqueLetterSubject)
     messagesPage.saveAttachmentInDocuments()
 
     // Open Documents, rename just saved file and move it from My documents to "Trash"
     navigationToolbar.navigateToDocuments()
-    documentsPage.renameAndMoveLastSavedFileToTrash(this.letterInfo.newFileTitle)
+    documentsPage.renameAndMoveLastSavedFileToTrash(uniqueNewFileName)
     documentsTreePanel.elements.trashFolder().click()
-    cy.get(`[title="${this.letterInfo.newFileTitle}.txt"]`).should('exist')
+    cy.get(`[title="${uniqueNewFileName}.txt"]`).should('exist')
   })
 
   after(function () {
-    BasePage.reloadPageAndWait()
-    documentsPage.clearUploadedDocuments()
-    documentsPage.clearTrashFolder()
-    messagesPage.clearInboxFolder()
-    messagesPage.clearSentFolder()
-    messagesPage.clearTrashFolder()
-    cy.deleteFixtureFile(this.letterInfo.letterFileName)
+    cy.reloadPageAndWait()
+    documentsPage.clearMyDocumentByTitle([uniqueFileName])
+    documentsPage.clearTrashFolderByTitle([uniqueFileName, uniqueNewFileName])
+    messagesPage.clearInboxByLetterSubject([uniqueLetterSubject])
+    messagesPage.clearSentFolder([uniqueLetterSubject])
+    messagesPage.clearTrashFolder([uniqueLetterSubject])
+    cy.deleteFixtureFile(uniqueFileName)
   })
 })
