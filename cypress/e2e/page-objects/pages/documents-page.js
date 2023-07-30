@@ -17,10 +17,6 @@ class DocumentsPage {
             sortBy: () => cy.get('.sortBy')
         }
 
-    getUploadedFileNameByTitle(fileName) {
-        return cy.get(`[title$="${fileName}"]`)
-    }
-
     renameAndMoveLastSavedFileToTrash(newTitle) {
         this.elements.sortBy().click()
         cy.contains('Date').click()
@@ -32,7 +28,7 @@ class DocumentsPage {
     }
 
     clearMyDocumentByTitle(fileNames) {
-        navigationToolbar.navigateToDocuments()
+        navigationToolbar.elements.documentsButton().click()
         documentsTreePanel.elements.myDocuments().click()
         cy.wrap(fileNames).each(fileName => {
             let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))
@@ -45,7 +41,7 @@ class DocumentsPage {
     }
 
     clearTrashFolderByTitle(fileNames) {
-        navigationToolbar.navigateToDocuments()
+        navigationToolbar.elements.documentsButton().click()
         documentsTreePanel.elements.trashFolder().click({ force: true })
         cy.wrap(fileNames).each(fileName => {
             let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))

@@ -6,7 +6,7 @@ import MessagesPage from "../page-objects/pages/messages-page"
 import MessagesTreePanel from "../page-objects/page-components/messages-tree-panel"
 import MessagesToolBar from "../page-objects/page-components/messages-toolbar"
 import DocumentsTreePanel from "../page-objects/page-components/documents-tree-panel"
-import { generateUpdatedFilename } from '../../support/filenameUtils'
+import { generateUniqueFilename } from '../../support/filenameUtils'
 
 const dashboardPage = new DashboardPage()
 const loginPage = new LoginPage()
@@ -29,9 +29,9 @@ describe('Mail Attachment', function () {
 
     cy.fixture('letter-info').then(function (letterInfo) {
       this.letterInfo = letterInfo
-      uniqueFileName = generateUpdatedFilename(letterInfo.letterFileName)
-      uniqueLetterSubject = generateUpdatedFilename(letterInfo.subject)
-      uniqueNewFileName = generateUpdatedFilename(letterInfo.newFileTitle)
+      uniqueFileName = generateUniqueFilename(letterInfo.letterFileName)
+      uniqueLetterSubject = generateUniqueFilename(letterInfo.subject)
+      uniqueNewFileName = generateUniqueFilename(letterInfo.newFileTitle)
       cy.generateFixtureFile(uniqueFileName, letterInfo.letterText)
     })
   })
@@ -50,12 +50,12 @@ describe('Mail Attachment', function () {
     })
 
     // Attach new .txt file
-    navigationToolbar.navigateToDocuments()
+    navigationToolbar.elements.documentsButton().click()
     cy.uploadDocument(uniqueFileName)
-    documentsPage.getUploadedFileNameByTitle(uniqueFileName).should('be.visible')
+    cy.get(`[title$="${uniqueFileName}"]`).should('be.visible')
 
     // Send email with attached file to myself
-    navigationToolbar.navigateToMessages()
+    navigationToolbar.elements.messagesButton().click()
     messagesToolbar.elements.newButton().click()
     messagesPage.fillLetter(email, uniqueLetterSubject, this.letterInfo.content)
     messagesPage.addAttachmentFromDocuments(uniqueFileName)
@@ -75,7 +75,7 @@ describe('Mail Attachment', function () {
     messagesPage.saveAttachmentInDocuments()
 
     // Open Documents, rename just saved file and move it from My documents to "Trash"
-    navigationToolbar.navigateToDocuments()
+    navigationToolbar.elements.documentsButton().click()
     documentsPage.renameAndMoveLastSavedFileToTrash(uniqueNewFileName)
     documentsTreePanel.elements.trashFolder().click()
     cy.get(`[title="${uniqueNewFileName}.txt"]`).should('exist')
