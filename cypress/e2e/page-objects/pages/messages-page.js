@@ -11,6 +11,7 @@ const messagesToolbar = new MessagesToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
 class MessagesPage {
+
     elements =
         {
             mailTo: () => cy.get('#mailTo'),
@@ -49,11 +50,11 @@ class MessagesPage {
         this.elements.attachmentArrowDown().click({ force: true })
         cy.contains('Save in Documents').click()
         saveInDocumentsWindow.elements.myDocuments().click()
-        saveInDocumentsWindow.clickSaveButton()
+        saveInDocumentsWindow.elements.saveButton().should("not.contain.class", "GCSDBRWBMB").click()
     }
 
     clearInboxByLetterSubject(letterSubjects) {
-        navigationToolbar.navigateToMessages()
+        navigationToolbar.elements.messagesButton().click()
         messagesTreePanel.clickInbox()
         cy.wrap(letterSubjects).each(subject => {
             cy.get(`[title="${subject}"]`).parents('tr').within(() => {
@@ -64,7 +65,7 @@ class MessagesPage {
     }
 
     clearSentFolder(letterSubjects) {
-        navigationToolbar.navigateToMessages()
+        navigationToolbar.elements.messagesButton().click()
         messagesTreePanel.elements.sentFolder().click()
         cy.wrap(letterSubjects).each(subject => {
             cy.get(`[title="${subject}"]`).parents('tr').within(() => {
@@ -76,7 +77,7 @@ class MessagesPage {
     }
 
     clearTrashFolder(letterSubjects) {
-        navigationToolbar.navigateToMessages()
+        navigationToolbar.elements.messagesButton().click()
         messagesTreePanel.elements.trashFolder().click()
         cy.wrap(letterSubjects).each(subject => {
             cy.get(`[title="${subject}"]`).each($element => {

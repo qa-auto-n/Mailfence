@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-export function generateUpdatedFilename(filename) {
+export function generateUniqueFilename(filename) {
     const extensionIndex = filename.lastIndexOf('.')
     if (extensionIndex !== -1) {
         const filenameWithoutExtension = filename.slice(0, extensionIndex)

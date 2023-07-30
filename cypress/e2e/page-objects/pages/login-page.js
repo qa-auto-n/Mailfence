@@ -1,4 +1,5 @@
 class LoginPage {
+
     elements =
         {
             emailField: () => cy.get('[name="UserID"]'),
