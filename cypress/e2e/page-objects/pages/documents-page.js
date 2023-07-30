@@ -9,6 +9,7 @@ const documentsToolBar = new DocumentsToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
 class DocumentsPage {
+
     elements =
         {
             singleDocumentblock: () => cy.get('.trow'),

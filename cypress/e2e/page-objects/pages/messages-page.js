@@ -11,6 +11,7 @@ const messagesToolbar = new MessagesToolBar()
 const confirmDeletionWindow = new ConfirmDeletionWindow()
 
 class MessagesPage {
+
     elements =
         {
             mailTo: () => cy.get('#mailTo'),

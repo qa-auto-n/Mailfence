@@ -1,4 +1,5 @@
 class NavigationToolBar {
+
   elements = {
     userSection: () => cy.get('.user > span'),
     documentsButton: () => cy.get('div#nav-docs'),
