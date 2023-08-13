@@ -1,26 +1,23 @@
+import { v4 as uuidv4 } from 'uuid'
+import { appendIdToFilename, extractFilenameWithoutExtension } from '../../support/filenameUtils'
 import DashboardPage from "../page-objects/pages/dashboard-page"
 import LoginPage from "../page-objects/pages/login-page"
-import NavigationToolbar from "../page-objects/page-components/navigation-tool-bar"
+import MailboxHomePage from '../page-objects/pages/mailbox-home-page'
 import DocumentsPage from "../page-objects/pages/documents-page"
 import MessagesPage from "../page-objects/pages/messages-page"
-import MessagesTreePanel from "../page-objects/page-components/messages-tree-panel"
-import MessagesToolBar from "../page-objects/page-components/messages-toolbar"
-import DocumentsTreePanel from "../page-objects/page-components/documents-tree-panel"
-import { generateUniqueFilename } from '../../support/filenameUtils'
 
 const dashboardPage = new DashboardPage()
 const loginPage = new LoginPage()
-const navigationToolbar = new NavigationToolbar()
+const mailboxHomePage = new MailboxHomePage()
 const documentsPage = new DocumentsPage()
 const messagesPage = new MessagesPage()
-const messagesTreePanel = new MessagesTreePanel()
-const messagesToolbar = new MessagesToolBar()
-const documentsTreePanel = new DocumentsTreePanel()
+const commonUniqueId = uuidv4().slice(0, 6);
 
 describe('Mail Attachment', function () {
   let uniqueFileName
   let uniqueLetterSubject
-  let uniqueNewFileName
+  let documentsToCleanUp = []
+  let lettersToCleanUp = []
 
   before(function () {
     cy.fixture('user-info').then(function (userData) {
@@ -29,9 +26,8 @@ describe('Mail Attachment', function () {
 
     cy.fixture('letter-info').then(function (letterInfo) {
       this.letterInfo = letterInfo
-      uniqueFileName = generateUniqueFilename(letterInfo.letterFileName)
-      uniqueLetterSubject = generateUniqueFilename(letterInfo.subject)
-      uniqueNewFileName = generateUniqueFilename(letterInfo.newFileTitle)
+      uniqueFileName = appendIdToFilename(letterInfo.documentFullName, commonUniqueId)
+      uniqueLetterSubject = appendIdToFilename(letterInfo.subject, commonUniqueId)
       cy.generateFixtureFile(uniqueFileName, letterInfo.letterText)
     })
   })
@@ -39,32 +35,26 @@ describe('Mail Attachment', function () {
   it('should send and receive an email with an attachment', function () {
     const email = Cypress.env('email')
     const password = Cypress.env('password')
+    documentsToCleanUp.push(uniqueFileName)
+    lettersToCleanUp.push(uniqueLetterSubject)
 
     // Log in
     cy.visit(Cypress.env('url'))
     dashboardPage.elements.loginButton().click()
     loginPage.login(email, password)
-    navigationToolbar.elements.userSection().then(function (name) {
-      const actualName = name.text()
+    mailboxHomePage.getUserName().then(function (actualName) {
       expect(actualName).to.equal(this.userData.name)
     })
 
     // Attach new .txt file
-    navigationToolbar.elements.documentsButton().click()
-    cy.uploadDocument(uniqueFileName)
-    cy.get(`[title$="${uniqueFileName}"]`).should('be.visible')
+    documentsPage.uploadDocument(uniqueFileName)
+    cy.get(`[title$="${uniqueFileName}"]`).should('exist')
 
     // Send email with attached file to myself
-    navigationToolbar.elements.messagesButton().click()
-    messagesToolbar.elements.newButton().click()
-    messagesPage.fillLetter(email, uniqueLetterSubject, this.letterInfo.content)
-    messagesPage.addAttachmentFromDocuments(uniqueFileName)
-    messagesPage.elements.addedAttachment().should('contain', uniqueFileName)
-    messagesToolbar.elements.sendLetterButton().click()
+    messagesPage.sendLetter(email, uniqueLetterSubject, this.letterInfo.content, uniqueFileName)
 
     // Check that email recieved
-    messagesTreePanel.clickInbox({ timeout: 5000 })
-    messagesToolbar.elements.refreshButton().click()
+    messagesPage.clickInbox({ timeout: 3000 }, true)
     messagesPage.elements.unreadLetters()
       .find('div.listSubject')
       .contains(uniqueLetterSubject)
@@ -74,20 +64,32 @@ describe('Mail Attachment', function () {
     messagesPage.openUnreadLetterByTitle(uniqueLetterSubject)
     messagesPage.saveAttachmentInDocuments()
 
-    // Open Documents, rename just saved file and move it from My documents to "Trash"
-    navigationToolbar.elements.documentsButton().click()
-    documentsPage.renameAndMoveLastSavedFileToTrash(uniqueNewFileName)
-    documentsTreePanel.elements.trashFolder().click()
-    cy.get(`[title="${uniqueNewFileName}.txt"]`).should('exist')
+    // Open Documents and move just saved file from My documents to "Trash"
+    documentsPage.moveLastSavedFileToTrash()
+    documentsPage.navigateToTrashFolder()
+    const filenameWithoutExtension = extractFilenameWithoutExtension(uniqueFileName);
+    cy.get(`[title*="${filenameWithoutExtension}"]`).should('exist')
   })
 
-  after(function () {
-    cy.reloadPageAndWait()
-    documentsPage.clearMyDocumentByTitle([uniqueFileName])
-    documentsPage.clearTrashFolderByTitle([uniqueFileName, uniqueNewFileName])
-    messagesPage.clearInboxByLetterSubject([uniqueLetterSubject])
-    messagesPage.clearSentFolder([uniqueLetterSubject])
-    messagesPage.clearTrashFolder([uniqueLetterSubject])
-    cy.deleteFixtureFile(uniqueFileName)
+
+  afterEach(function () {
+    if (this.currentTest.state === "passed") {
+      cy.reloadPageAndWait()
+
+      if (documentsToCleanUp.length) {
+        documentsPage.clearMyDocumentByTitle(documentsToCleanUp)
+        documentsPage.clearTrashFolderByTitle(documentsToCleanUp)
+        documentsToCleanUp = []
+      }
+
+      if (lettersToCleanUp.length) {
+        messagesPage.clearInboxByLetterSubject(lettersToCleanUp)
+        messagesPage.clearSentFolder(lettersToCleanUp)
+        messagesPage.clearTrashFolder(lettersToCleanUp)
+        lettersToCleanUp = []
+      }
+
+      cy.deleteFixtureFile(uniqueFileName)
+    }
   })
 })

@@ -1,3 +1,4 @@
+import { extractFilenameWithoutExtension } from '../../../support/filenameUtils'
 import NavigationToolbar from "../page-components/navigation-tool-bar"
 import DocumentsTreePanel from "../page-components/documents-tree-panel"
 import DocumentsToolBar from "../page-components/documents-toolbar"
@@ -12,25 +13,30 @@ class DocumentsPage {
 
     elements =
         {
-            singleDocumentblock: () => cy.get('.trow'),
-            docRenameOption: () => cy.get('#doc_rename'),
-            docRenameInput: () => cy.get('#rename_input'),
-            sortBy: () => cy.get('.sortBy')
+            singleDocumentBlock: () => cy.get('.trow'),
+            sortByElement: () => cy.get('.sortBy')
         }
 
-    renameAndMoveLastSavedFileToTrash(newTitle) {
-        this.elements.sortBy().click()
+    uploadDocument(filepath) {
+        navigationToolbar.elements.documentsButton().click()
+        cy.get('#new_doc input[type="file"]').attachFile(filepath)
+    }
+
+    moveLastSavedFileToTrash() {
+        navigationToolbar.elements.documentsButton().click()
+        this.elements.sortByElement().click()
         cy.contains('Date').click()
-        this.elements.singleDocumentblock().eq(0).click()
-        documentsToolBar.elements.etcButton().click()
-        this.elements.docRenameOption().click()
-        this.elements.docRenameInput().type(newTitle).type('{enter}')
-        cy.dragAndDrop(this.elements.singleDocumentblock().eq(0), documentsTreePanel.elements.trashFolder())
+        this.elements.singleDocumentBlock().eq(0).click()
+        cy.dragAndDrop(this.elements.singleDocumentBlock().eq(0), documentsTreePanel.elements.trashFolder())
+    }
+
+    navigateToTrashFolder() {
+        documentsTreePanel.elements.trashFolder().click()
     }
 
     clearMyDocumentByTitle(fileNames) {
         navigationToolbar.elements.documentsButton().click()
-        documentsTreePanel.elements.myDocuments().click()
+        documentsTreePanel.elements.myDocumentsFolder().click()
         cy.wrap(fileNames).each(fileName => {
             let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))
             cy.get(`[title*="${filenameWithoutExtension}"]`).parents('tr').within(() => {
@@ -43,13 +49,18 @@ class DocumentsPage {
 
     clearTrashFolderByTitle(fileNames) {
         navigationToolbar.elements.documentsButton().click()
-        documentsTreePanel.elements.trashFolder().click({ force: true })
+        documentsTreePanel.elements.myDocumentsArrowIcon().click()
+        documentsTreePanel.elements.trashFolder().click()
+
         cy.wrap(fileNames).each(fileName => {
-            let filenameWithoutExtension = fileName.slice(0, fileName.lastIndexOf('.'))
-            cy.get(`[title*="${filenameWithoutExtension}"]`).parents('tr').within(() => {
-                cy.get('.checkIcon').click()
+            const filenameWithoutExtension = extractFilenameWithoutExtension(fileName)
+            cy.get(`[title*="${filenameWithoutExtension}"]`).each($element => {
+                cy.wrap($element).parents('tr').within(() => {
+                    cy.get('.checkIcon').click()
+                })
             })
         })
+
         documentsToolBar.elements.etcButton().click()
         documentsToolBar.elements.deleteInTrashButton().click()
         confirmDeletionWindow.elements.yesButton().click()
