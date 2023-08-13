@@ -25,17 +25,30 @@ class MessagesPage {
             addedAttachment: () => cy.get('[_type="att"]')
         }
 
-    fillLetter(to, subject, content = '') {
+    clickInbox(options = {}, refresh = false) {
+        messagesTreePanel.elements.inboxFolder().click()
+        const { timeout = null } = options
+        if (timeout != null) {
+            cy.wait(timeout)
+        }
+        if (refresh) {
+            messagesToolbar.elements.refreshButton().click()
+        }
+    }
+
+    sendLetter(to, subject, content = '', attachmentFileName = '') {
+        navigationToolbar.elements.messagesButton().click()
+        messagesToolbar.elements.newButton().click()
         this.elements.mailTo().type(to).type('{enter}')
         this.elements.mailSubject().type(subject)
         this.elements.contentIframe().getIframeBody().type(content)
-    }
-
-    addAttachmentFromDocuments(fileName) {
-        this.elements.attachmentDropdown().click()
-        this.elements.attachmentDropdownToolOption().click()
-        cy.get(`[title="${fileName}"]`).click()
-        this.elements.addDocumentsOkButton().click()
+        if (attachmentFileName != '') {
+            this.elements.attachmentDropdown().click()
+            this.elements.attachmentDropdownToolOption().click()
+            cy.get(`[title="${attachmentFileName}"]`).click()
+            this.elements.addDocumentsOkButton().click()
+        }
+        messagesToolbar.elements.sendLetterButton().click()
     }
 
     openUnreadLetterByTitle(title) {
@@ -49,13 +62,13 @@ class MessagesPage {
     saveAttachmentInDocuments() {
         this.elements.attachmentArrowDown().click({ force: true })
         cy.contains('Save in Documents').click()
-        saveInDocumentsWindow.elements.myDocuments().click()
+        saveInDocumentsWindow.elements.myDocumentsFolder().click()
         saveInDocumentsWindow.elements.saveButton().should("not.contain.class", "GCSDBRWBMB").click()
     }
 
     clearInboxByLetterSubject(letterSubjects) {
         navigationToolbar.elements.messagesButton().click()
-        messagesTreePanel.clickInbox()
+        this.clickInbox()
         cy.wrap(letterSubjects).each(subject => {
             cy.get(`[title="${subject}"]`).parents('tr').within(() => {
                 cy.get('.checkIcon').click()
