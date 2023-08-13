@@ -2,10 +2,6 @@ import 'cypress-file-upload'
 
 const path = require('path')
 
-Cypress.Commands.add('uploadDocument', (filepath) => {
-  cy.get('input[type="file"]').attachFile(filepath)
-})
-
 Cypress.Commands.add('generateFixtureFile', (fileName, content) => {
   const fixtureDirectory = Cypress.config('fixturesFolder')
   const filePath = path.join(fixtureDirectory, fileName)
@@ -44,7 +40,7 @@ Cypress.Commands.add('reloadPageAndWait', () => {
     cy.get('i').then(($el) => {
       if ($el.is(':visible')) {
         cy.log('Spinner is still be visible but it is not relevant')
-        cy.wait(5000)
+        cy.wait(3000)
       } else {
         cy.get('i').should('not.be.visible')
       }
