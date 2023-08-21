@@ -1,4 +1,4 @@
-# Use the official Cypress Docker image as the base image
+# Use the official Cypress Docker image
 FROM cypress/browsers:latest
 
 # Set the working directory inside the container
