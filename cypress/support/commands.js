@@ -20,7 +20,7 @@ Cypress.Commands.add('getIframeBody', { prevSubject: 'element' }, ($iframe) => {
   })
 })
 
-Cypress.Commands.add("dragAndDrop", (subject, target) => {
+Cypress.Commands.add('dragAndDrop', (subject, target) => {
   Cypress.log({
     name: "DRAGNDROP",
     message: `Dragging element ${subject} to ${target}`,
