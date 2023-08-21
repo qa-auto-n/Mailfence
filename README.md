@@ -35,6 +35,20 @@ npx cypress run --env email=[email],password=[password]
 
 Replace **email** with your actual email address and **password** with your password.
 
+## Running Tests with Docker
+Build the docker image with:
+
+```bash
+docker build -t my-cypress-tests .
+```
+
+Run the Docker container with environment variables:
+```bash
+docker run -it my-cypress-tests npx cypress run --env email=[email],password=[password]
+```
+
+Replace **email** with your actual email address and **password** with your password.
+
 ## Test Files
 The test cases are located in the cypress/e2e directory.
 
