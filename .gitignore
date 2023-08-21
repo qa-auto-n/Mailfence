@@ -7,3 +7,9 @@ node_modules/
 
 # debug
 npm-debug.log*
+
+# idea
+.idea
+
+# Txt files
+*.txt

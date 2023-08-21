@@ -53,14 +53,14 @@ describe('Mail Attachment', function () {
     // Send email with attached file to myself
     messagesPage.sendLetter(email, uniqueLetterSubject, this.letterInfo.content, uniqueFileName)
 
-    // Check that email recieved
-    messagesPage.clickInbox({ timeout: 3000 }, true)
+    // Check that email received
+    messagesPage.clickInbox({ timeout: 5000 }, true)
     messagesPage.elements.unreadLetters()
       .find('div.listSubject')
       .contains(uniqueLetterSubject)
       .should('exist')
 
-    // Open recieved email and save the attached file to My Documents
+    // Open received email and save the attached file to My Documents
     messagesPage.openUnreadLetterByTitle(uniqueLetterSubject)
     messagesPage.saveAttachmentInDocuments()
 
